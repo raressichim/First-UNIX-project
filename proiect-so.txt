@@ -1,0 +1,75 @@
+\#!/bin/bash
+
+echo "PROIECT RARES SICHIM - GRUPA 1023 E"
+while true
+do
+echo
+echo "Alegeti una din optiunile urmatoare:"
+echo "0 ->Iesire"
+echo "1 -> Adaugare drepturi de executie pentru un fisier la calea curenta"
+echo "2 -> Afisarea procentului memoriei RAM ocupata de pe sistem"
+echo "3 -> Arhivarea tar a home-ului unui utilizator cerut de la tastatura"
+echo
+echo "Introduceti un numar de la 0 la 3"
+read var
+case $var in
+	0) clear
+	   echo "Iesire realizata cu succces"
+	   break;;
+	1)clear
+	  if [ $EUID -ne 0 ]
+	       then echo "Nu puteti executa operatia 1 deoarece nu sunteti logat ca root / Folositi comanda sudo"
+	       else echo "Introduceti numele fisierului:"
+	      	    read nume
+		    ls | grep $nume > /dev/null
+		    if [ $? != 0 ]
+			then echo "Fisierul $nume nu exista la calea curenta!"
+			     echo
+		    else
+	            chmod a+x $nume
+		    echo "Fisierul $nume are acum drepturi de executie"
+		    echo
+		    fi
+	fi;;
+	2)clear
+	  echo "Procentul de memorie RAM ocupata de pe sistem este: $(free -m | grep "Mem" | awk '{print $3/$2*100 "%"}')"
+	  echo
+	  ;;
+	3)clear
+	  if [ $EUID -ne 0 ]
+		then echo "Nu puteti executa operatia 3 deoarece nu sunteti logat ca root / Folositi comanda sudo"
+		echo
+		sleep 1
+		else
+			echo "Introduceti numele utilizatorului:"
+			read nume_user
+				getent passwd $nume_user > /dev/null
+				if [ $? -ne 0 ]
+					then clear
+						echo "Numele utilizatorului introdus de la tastura nu exista pe acest sistem!"
+						echo
+						sleep 1
+					else
+			echo "Introduceti numele arhivei ce urmeaza a fi creata (de forma arhiva.tar):"
+			read arhiva
+			if [[ $arhiva != *.tar ]]
+			   then clear
+				echo "Nu ati introdus corect extensia .tar a arhivei!"
+				echo
+				sleep 1
+			   else tar -cvf $arhiva /home/$sume_user
+				echo
+				echo "Arhiva $arhiva a fost creata cu succes la calea /home/$nume_user"
+				echo
+		fi
+		   fi
+	fi;;
+	*)clear
+	echo "Nu ati introdus o optiune valida / Introduceti un numar din intervalul [0-3]"
+	echo
+	;;
+esac
+sleep 1
+done
+clear
+echo "Proiectul a fost finalizat!"
